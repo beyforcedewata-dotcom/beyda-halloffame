@@ -567,6 +567,9 @@
 <body>
 
 <div class="container">
+  <!-- Datalist Autocomplete untuk Rekomendasi Nama Pemain -->
+  <datalist id="registeredPlayersList"></datalist>
+
   <!-- Header -->
   <header>
     <div class="brand-header">
@@ -687,22 +690,22 @@
       <div class="grid-2">
         <div class="form-group">
           <label style="color: var(--accent-gold);">🥇 1st Place (10 pts):</label>
-          <input type="text" id="entryP1" placeholder="Champion player name">
+          <input type="text" id="entryP1" list="registeredPlayersList" placeholder="Champion player name">
         </div>
 
         <div class="form-group">
           <label style="color: var(--accent-silver);">🥈 2nd Place (7 pts):</label>
-          <input type="text" id="entryP2" placeholder="Runner-up player name">
+          <input type="text" id="entryP2" list="registeredPlayersList" placeholder="Runner-up player name">
         </div>
 
         <div class="form-group">
           <label style="color: var(--accent-bronze);">🥉 3rd Place (5 pts):</label>
-          <input type="text" id="entryP3" placeholder="3rd place player name">
+          <input type="text" id="entryP3" list="registeredPlayersList" placeholder="3rd place player name">
         </div>
 
         <div class="form-group">
           <label style="color: #81d4fa;">4th Place (3 pts):</label>
-          <input type="text" id="entryP4" placeholder="4th place player name">
+          <input type="text" id="entryP4" list="registeredPlayersList" placeholder="4th place player name">
         </div>
       </div>
     </div>
@@ -739,19 +742,19 @@
       <div class="grid-2">
         <div class="form-group">
           <label style="color: var(--accent-gold);">🥇 1st Place:</label>
-          <input type="text" id="editP1">
+          <input type="text" id="editP1" list="registeredPlayersList">
         </div>
         <div class="form-group">
           <label style="color: var(--accent-silver);">🥈 2nd Place:</label>
-          <input type="text" id="editP2">
+          <input type="text" id="editP2" list="registeredPlayersList">
         </div>
         <div class="form-group">
           <label style="color: var(--accent-bronze);">🥉 3rd Place:</label>
-          <input type="text" id="editP3">
+          <input type="text" id="editP3" list="registeredPlayersList">
         </div>
         <div class="form-group">
           <label style="color: #81d4fa;">4th Place:</label>
-          <input type="text" id="editP4">
+          <input type="text" id="editP4" list="registeredPlayersList">
         </div>
       </div>
     </div>
@@ -969,6 +972,34 @@
     return a.points === b.points && a.p1 === b.p1 && a.p2 === b.p2 && a.p3 === b.p3 && a.p4 === b.p4;
   }
 
+  /* Helper Format Angka Ordinal Tanpa Simbol '#' */
+  function getOrdinalRank(n) {
+    const s = ["th", "st", "nd", "rd"];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  }
+
+  function updateAutocompleteOptions() {
+    const datalist = document.getElementById("registeredPlayersList");
+    if (!datalist) return;
+
+    const uniqueNames = new Set();
+    Object.values(window.allData).forEach(yearEvents => {
+      if (Array.isArray(yearEvents)) {
+        yearEvents.forEach(ev => {
+          [ev.p1, ev.p2, ev.p3, ev.p4].forEach(name => {
+            if (name && name.trim()) uniqueNames.add(name.trim());
+          });
+        });
+      }
+    });
+
+    datalist.innerHTML = Array.from(uniqueNames)
+      .sort()
+      .map(name => `<option value="${escapeHtml(name)}">`)
+      .join("");
+  }
+
   function renderStandings() {
     const currentEvents = getCurrentYearEvents();
     const filteredEvents = currentEvents.filter(ev => isEventInSelectedPeriod(ev.date));
@@ -1009,7 +1040,8 @@
 
     groupedStandings.forEach(group => {
       let rankClass = "";
-      let rankText = `#${group.rankNum}`;
+      let rankText = getOrdinalRank(group.rankNum);
+
       if (group.rankNum === 1) { rankClass = "rank-1"; rankText = "🥇 1st"; }
       else if (group.rankNum === 2) { rankClass = "rank-2"; rankText = "🥈 2nd"; }
       else if (group.rankNum === 3) { rankClass = "rank-3"; rankText = "🥉 3rd"; }
@@ -1280,6 +1312,7 @@
   function renderAll() {
     renderStandings();
     renderHistory();
+    updateAutocompleteOptions();
   }
 
   function escapeHtml(str) {
