@@ -582,13 +582,7 @@
       
       <div style="display: inline-flex; align-items: center; gap: 6px;">
         <span style="font-size: 0.85rem; font-weight: bold; color: var(--text-muted);">Year:</span>
-        <select id="headerYearSelect" class="year-select-pill" onchange="switchYear(this.value)">
-          <option value="2026">2026</option>
-          <option value="2027">2027</option>
-          <option value="2028">2028</option>
-          <option value="2029">2029</option>
-          <option value="2030">2030</option>
-        </select>
+        <select id="headerYearSelect" class="year-select-pill" onchange="switchYear(this.value)"></select>
       </div>
 
       <button class="btn btn-secondary" id="adminAuthBtn" onclick="toggleAdminAuth()" style="padding: 4px 10px; font-size: 0.8rem;">
@@ -601,7 +595,7 @@
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('standingsTab')">🏆 Standings & Rank</button>
     <button class="tab-btn" onclick="switchTab('historyTab')">📅 Match Logs</button>
-    <button class="tab-btn admin-locked" id="tab_entry" onclick="switchTab('entryTab')">⚙️ Entry</button>
+    <button class="tab-btn admin-locked" id="tab_entry" onclick="switchTab('entryTab')">⚙️ Entry & Tools</button>
   </div>
 
   <!-- TAB 1: STANDINGS & RANK -->
@@ -668,8 +662,10 @@
     <div id="logsContainer"></div>
   </div>
 
-  <!-- TAB 3: ADMIN ENTRY -->
+  <!-- TAB 3: ADMIN ENTRY & TOOLS -->
   <div id="entryTab" class="view-panel">
+    
+    <!-- 1. Input Match Result -->
     <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 16px;">
       <h2 style="color: var(--accent-cyan); margin: 0; font-size: 1.25rem;">⚙️ Input Tournament Match Result</h2>
     </div>
@@ -710,9 +706,50 @@
       </div>
     </div>
 
-    <button class="btn btn-action" style="width: 100%; padding: 12px; font-size: 1rem; margin-top: 10px;" onclick="submitEventResults()">
+    <button class="btn btn-action" style="width: 100%; padding: 12px; font-size: 1rem; margin-bottom: 24px;" onclick="submitEventResults()">
       💾 Save & Publish Result
     </button>
+
+    <!-- 2. Bulk Rename Player -->
+    <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 16px;">
+      <h2 style="color: var(--accent-orange); margin: 0; font-size: 1.25rem;">🔄 Bulk Rename Player (Merge History)</h2>
+    </div>
+
+    <div class="card grid-2">
+      <div class="form-group">
+        <label>Current / Old Player Name:</label>
+        <input type="text" id="bulkOldName" list="registeredPlayersList" placeholder="Name to replace">
+      </div>
+      <div class="form-group">
+        <label>New Player Name:</label>
+        <input type="text" id="bulkNewName" list="registeredPlayersList" placeholder="Target / new official name">
+      </div>
+    </div>
+
+    <button class="btn btn-secondary" style="width: 100%; padding: 10px; font-size: 0.92rem; border-color: var(--accent-orange); color: var(--accent-orange); margin-bottom: 24px;" onclick="bulkRenamePlayer()">
+      🔁 Replace Across All Matches
+    </button>
+
+    <!-- 3. Change Admin Passcode -->
+    <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 16px;">
+      <h2 style="color: var(--accent-green); margin: 0; font-size: 1.25rem;">🔑 Change Admin Passcode</h2>
+    </div>
+
+    <div class="card grid-2">
+      <div class="form-group">
+        <label>Current Passcode:</label>
+        <input type="password" id="currentPassInput" placeholder="Enter current passcode">
+      </div>
+      <div class="form-group">
+        <label>New Passcode:</label>
+        <input type="password" id="newPassInput" placeholder="Enter new passcode">
+      </div>
+    </div>
+
+    <button class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 0.92rem;" onclick="changeAdminPasscode()">
+      🔒 Update Admin Passcode
+    </button>
+
   </div>
 </div>
 
@@ -785,8 +822,19 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const dbRef = ref(db, 'yearlyLeaderboardState');
+  const passRef = ref(db, 'adminPasscodeState');
 
-  const ADMIN_PASS = "1234";
+  window.adminPasscode = "1234";
+
+  // Listener Passcode dari Firebase (agar tersimpan permanen)
+  onValue(passRef, (snapshot) => {
+    const val = snapshot.val();
+    if (val) {
+      window.adminPasscode = String(val);
+    } else {
+      set(passRef, "1234");
+    }
+  });
 
   window.isAdmin = false;
   window.activeYear = "2026";
@@ -797,7 +845,7 @@
 
   onValue(dbRef, (snapshot) => {
     const data = snapshot.val();
-    if (data) {
+    if (data && typeof data === 'object') {
       window.allData = data;
     } else {
       window.allData = { "2026": [] };
@@ -860,8 +908,8 @@
       window.switchTab('standingsTab');
       alert("Logged out from admin mode.");
     } else {
-      const pass = prompt("Enter Admin Passcode (Default: 1234):");
-      if (pass === ADMIN_PASS) {
+      const pass = prompt("Enter Admin Passcode:");
+      if (pass === window.adminPasscode) {
         window.isAdmin = true;
         document.getElementById("adminAuthBtn").innerHTML = "🔓 Admin Logout";
         document.querySelectorAll(".admin-locked").forEach(el => el.style.display = "inline-flex");
@@ -872,6 +920,94 @@
     }
     renderHistory();
   };
+
+  window.changeAdminPasscode = function() {
+    const cur = document.getElementById("currentPassInput").value.trim();
+    const next = document.getElementById("newPassInput").value.trim();
+
+    if (!cur || !next) {
+      return alert("Please enter both current and new passcodes!");
+    }
+
+    if (cur !== window.adminPasscode) {
+      return alert("Current passcode is incorrect!");
+    }
+
+    if (next.length < 4) {
+      return alert("New passcode must be at least 4 characters!");
+    }
+
+    set(passRef, next).then(() => {
+      window.adminPasscode = next;
+      document.getElementById("currentPassInput").value = "";
+      document.getElementById("newPassInput").value = "";
+      alert("Admin Passcode successfully updated!");
+    }).catch(err => alert("Error updating passcode: " + err.message));
+  };
+
+  window.bulkRenamePlayer = function() {
+    const oldName = document.getElementById("bulkOldName").value.trim();
+    const newName = document.getElementById("bulkNewName").value.trim();
+
+    if (!oldName || !newName) {
+      return alert("Please provide both the Old Name and New Name!");
+    }
+
+    if (oldName.toLowerCase() === newName.toLowerCase()) {
+      return alert("Old Name and New Name are the same!");
+    }
+
+    let modifiedCount = 0;
+
+    Object.keys(window.allData).forEach(yearKey => {
+      const yearEvents = window.allData[yearKey];
+      if (Array.isArray(yearEvents)) {
+        yearEvents.forEach(ev => {
+          ['p1', 'p2', 'p3', 'p4'].forEach(k => {
+            if (ev[k] && ev[k].trim().toLowerCase() === oldName.toLowerCase()) {
+              ev[k] = newName;
+              modifiedCount++;
+            }
+          });
+        });
+      }
+    });
+
+    if (modifiedCount === 0) {
+      return alert(`No podium entries found matching "${oldName}".`);
+    }
+
+    if (confirm(`Replace "${oldName}" with "${newName}" across ${modifiedCount} match placements?`)) {
+      window.saveFirebaseData();
+      document.getElementById("bulkOldName").value = "";
+      document.getElementById("bulkNewName").value = "";
+      alert(`Successfully updated ${modifiedCount} placements!`);
+    }
+  };
+
+  /* Populate Year Dropdown (Hanya menampilkan tahun yang ada datanya) */
+  function updateYearDropdown() {
+    const select = document.getElementById("headerYearSelect");
+    if (!select) return;
+
+    const availableYears = Object.keys(window.allData).filter(y => {
+      return Array.isArray(window.allData[y]) && window.allData[y].length > 0;
+    });
+
+    if (availableYears.length === 0) {
+      availableYears.push(window.activeYear || "2026");
+    }
+
+    if (!availableYears.includes(window.activeYear)) {
+      window.activeYear = availableYears[availableYears.length - 1];
+    }
+
+    availableYears.sort();
+
+    select.innerHTML = availableYears
+      .map(y => `<option value="${y}" ${y === window.activeYear ? 'selected' : ''}>${y}</option>`)
+      .join("");
+  }
 
   window.setPeriodMode = function(mode) {
     window.activePeriodMode = mode;
@@ -972,7 +1108,6 @@
     return a.points === b.points && a.p1 === b.p1 && a.p2 === b.p2 && a.p3 === b.p3 && a.p4 === b.p4;
   }
 
-  /* Helper Format Angka Ordinal Tanpa Simbol '#' */
   function getOrdinalRank(n) {
     const s = ["th", "st", "nd", "rd"];
     const v = n % 100;
@@ -1272,8 +1407,11 @@
       p4
     };
 
-    if (!window.allData[window.activeYear]) window.allData[window.activeYear] = [];
-    window.allData[window.activeYear].push(newEvent);
+    const eventYear = date ? date.split("-")[0] : window.activeYear;
+
+    if (!window.allData[eventYear]) window.allData[eventYear] = [];
+    window.allData[eventYear].push(newEvent);
+    window.activeYear = eventYear;
     window.saveFirebaseData();
 
     document.getElementById("entryEventName").value = "";
@@ -1282,7 +1420,7 @@
     document.getElementById("entryP3").value = "";
     document.getElementById("entryP4").value = "";
 
-    alert(`Event "${eventName}" saved to Firebase for year ${window.activeYear}!`);
+    alert(`Event "${eventName}" saved to Firebase for year ${eventYear}!`);
     window.switchTab('standingsTab');
   };
 
@@ -1310,6 +1448,7 @@
   }
 
   function renderAll() {
+    updateYearDropdown();
     renderStandings();
     renderHistory();
     updateAutocompleteOptions();
