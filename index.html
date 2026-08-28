@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BEYFORCE DEWATA HALL OF FAME</title>
+  <link rel="icon" type="image/png" href="BeyDa_Logo_New_HD.png">
+
+  <style>
+    :root {
+      --bg-dark: #050b14;
+      --bg-card: #0a1224;
+      --bg-card-hover: #0f1c38;
+      --bg-input: #ffffff;
+      --text-input: #0f172a;
+      --accent-cyan: #00e5ff;
+      --accent-orange: #ff3d00;
+      --accent-green: #00e676;
+      --accent-red: #ff1744;
+      --accent-gold: #ffd700;
+      --accent-silver: #e0e0e0;
+      --accent-bronze: #cd7f32;
+      --text-white: #ffffff;
+      --text-muted: #8a99ad;
+      --border-color: rgba(0, 229, 255, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-white);
+      padding: 16px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 16px;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 14px;
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .brand-logo {
+      max-height: 56px;
+      width: auto;
+      border-radius: 50%;
+      box-shadow: 0 0 14px rgba(0, 229, 255, 0.45);
+      background: #0a1224;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      color: var(--accent-cyan);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
+    }
+
+    .header-sub {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .status-online {
+      background: rgba(0, 229, 255, 0.15);
+      color: var(--accent-cyan);
+      border: 1px solid var(--accent-cyan);
+    }
+    .status-syncing {
+      background: rgba(255, 61, 0, 0.15);
+      color: var(--accent-orange);
+      border: 1px solid var(--accent-orange);
+    }
+
+    .year-select-pill {
+      background: #101a2e;
+      color: var(--accent-orange);
+      border: 1.5px solid var(--accent-orange);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* Tabs Navigation */
+    .tabs {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: var(--bg-dark);
+      padding: 8px 0;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+    }
+
+    .tab-btn {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.88rem;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-white);
+      border-color: var(--accent-cyan);
+    }
+
+    .tab-btn.active {
+      background: var(--accent-cyan);
+      color: var(--bg-dark);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+    }
+
+    .tab-btn.admin-locked {
+      display: none;
+    }
+
+    .view-panel {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.55);
+    }
+
+    .view-panel.active {
+      display: block;
+    }
+
+    /* Filter Controls Bar */
+    .filter-bar {
+      background: rgba(5, 11, 20, 0.7);
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-title {
+      font-size: 0.82rem;
+      font-weight: bold;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      min-width: 80px;
+    }
+
+    .filter-btn {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--accent-cyan);
+      color: var(--text-white);
+    }
+
+    .filter-btn.active {
+      background: var(--accent-orange);
+      color: #ffffff;
+      border-color: var(--accent-orange);
+    }
+
+    /* Stats Summary Grid */
+    .stats-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat-badge-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .stat-badge-card .num {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--accent-cyan);
+    }
+
+    .stat-badge-card .lbl {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* Table Layout (7 Distinct Columns) */
+    .table-responsive-box {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 229, 255, 0.18);
+    }
+
+    .lb-table {
+      width: 100%;
+      min-width: 620px;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .lb-table th {
+      background: #071020;
+      color: var(--accent-cyan);
+      font-weight: bold;
+      padding: 12px 10px;
+      font-size: 0.82rem;
+      border-bottom: 2px solid var(--accent-cyan);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .lb-table td {
+      padding: 12px 10px;
+      vertical-align: middle;
+      font-size: 0.9rem;
+    }
+
+    .player-row {
+      cursor: pointer;
+      transition: background 0.18s;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .player-row:hover {
+      background: rgba(0, 229, 255, 0.08);
+    }
+
+    .player-row.active-drawer {
+      background: rgba(0, 229, 255, 0.14);
+      border-bottom: none;
+    }
+
+    .rank-cell {
+      text-align: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+    .rank-1 {
+      color: #ffd700 !important;
+      font-size: 1.15rem;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+    }
+    .rank-2 {
+      color: #e0e0e0 !important;
+      font-size: 1.05rem;
+    }
+    .rank-3 {
+      color: #cd7f32 !important;
+      font-size: 1rem;
+    }
+
+    /* Polished Accordion Drawer */
+    .details-row {
+      display: none;
+      background: #060e1d;
+      border-bottom: 2px solid var(--accent-cyan);
+    }
+
+    .details-row.open {
+      display: table-row;
+    }
+
+    .details-cell {
+      padding: 14px 16px !important;
+    }
+
+    .drawer-content {
+      background: rgba(10, 18, 36, 0.9);
+      border: 1px solid rgba(0, 229, 255, 0.25);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .drawer-grid-mini {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stat-box-mini {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      padding: 6px 8px;
+      text-align: center;
+    }
+    .stat-box-mini .val {
+      font-size: 1rem;
+      font-weight: bold;
+    }
+    .stat-box-mini .lbl {
+      font-size: 0.64rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* Scrollable Drawer Table (Max 5 items) */
+    .table-scroll-wrapper {
+      max-height: 195px;
+      overflow-y: auto;
+      border: 1px solid rgba(0, 229, 255, 0.15);
+      border-radius: 5px;
+      background: rgba(5, 11, 20, 0.6);
+    }
+
+    .table-scroll-wrapper::-webkit-scrollbar {
+      width: 6px;
+    }
+    .table-scroll-wrapper::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .table-scroll-wrapper::-webkit-scrollbar-thumb {
+      background: var(--accent-cyan);
+      border-radius: 3px;
+    }
+
+    .history-log-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .history-log-table th {
+      background: #08142a;
+      color: var(--accent-cyan);
+      font-size: 0.72rem;
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(0, 229, 255, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .history-log-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    /* Cards & Form Controls */
+    .card {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border-color);
+      padding: 16px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+
+    .stat-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      padding: 8px 10px;
+      border-radius: 6px;
+      text-align: center;
+    }
+    .stat-box .val {
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: var(--accent-cyan);
+    }
+    .stat-box .lbl {
+      font-size: 0.66rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: var(--text-white);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px 10px;
+      background: var(--bg-input);
+      border: 1.5px solid #cbd5e1;
+      border-radius: 5px;
+      color: var(--text-input);
+      font-size: 0.92rem;
+      font-weight: 500;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover { opacity: 0.88; }
+    .btn-primary { background: var(--accent-cyan); color: var(--bg-dark); }
+    .btn-action { background: var(--accent-orange); color: var(--text-white); }
+    .btn-secondary { background: #132240; color: var(--text-white); border: 1px solid var(--border-color); }
+    .btn-mini { padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; background: #1a2b4c; color: var(--accent-cyan); border: 1px solid var(--border-color); cursor: pointer; }
+
+    .export-footer-bar {
+      margin-top: 24px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 8px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 20px;
+      box-shadow: 0 0 25px rgba(0, 229, 255, 0.25);
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 8px; }
+      header h1 { font-size: 1.25rem; letter-spacing: 1px; }
+      .brand-logo { max-height: 44px; }
+      .view-panel { padding: 10px; }
+      .tab-btn { flex: 1 1 auto; text-align: center; padding: 6px 8px; font-size: 0.78rem; }
+      .stat-badge-card .num { font-size: 1.15rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <header>
+    <div class="brand-header">
+      <img src="BeyDa_Logo_New_HD.png" alt="Beyforce Dewata Logo" class="brand-logo" onerror="this.style.display='none'">
+      <h1>BEYFORCE DEWATA HALL OF FAME</h1>
+    </div>
+
+    <div class="header-sub">
+      <span class="status-pill status-online" id="syncStatus">🟢 Live Sync Active</span>
+      
+      <div style="display: inline-flex; align-items: center; gap: 6px;">
+        <span style="font-size: 0.85rem; font-weight: bold; color: var(--text-muted);">Year:</span>
+        <select id="headerYearSelect" class="year-select-pill" onchange="switchYear(this.value)">
+          <option value="2026">2026</option>
+          <option value="2027">2027</option>
+          <option value="2028">2028</option>
+          <option value="2029">2029</option>
+          <option value="2030">2030</option>
+        </select>
+      </div>
+
+      <button class="btn btn-secondary" id="adminAuthBtn" onclick="toggleAdminAuth()" style="padding: 4px 10px; font-size: 0.8rem;">
+        🔒 Admin Login
+      </button>
+    </div>
+  </header>
+
+  <!-- Sticky Navigation Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('standingsTab')">🏆 Standings & Rank</button>
+    <button class="tab-btn" onclick="switchTab('historyTab')">📅 Match Logs</button>
+    <button class="tab-btn admin-locked" id="tab_entry" onclick="switchTab('entryTab')">⚙️ Entry</button>
+  </div>
+
+  <!-- TAB 1: STANDINGS & RANK (7 Separate Columns Layout) -->
+  <div id="standingsTab" class="view-panel active">
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-title">Period:</span>
+        <button class="filter-btn active" id="btn_period_yearly" onclick="setPeriodMode('yearly')">🌟 Full Year</button>
+        <button class="filter-btn" id="btn_period_semester" onclick="setPeriodMode('semester')">🌓 Semester</button>
+        <button class="filter-btn" id="btn_period_quarter" onclick="setPeriodMode('quarter')">📊 Quarter</button>
+        <button class="filter-btn" id="btn_period_monthly" onclick="setPeriodMode('monthly')">📅 Monthly</button>
+      </div>
+
+      <div class="filter-group" id="subFilterGroup" style="display: none;">
+        <span class="filter-title">Range:</span>
+        <div id="subFilterControls" style="display: inline-flex; gap: 6px; flex-wrap: wrap;"></div>
+      </div>
+    </div>
+
+    <div class="stats-summary-grid">
+      <div class="stat-badge-card">
+        <div class="num" id="statTotalEvents">0</div>
+        <div class="lbl">Events in View</div>
+      </div>
+      <div class="stat-badge-card">
+        <div class="num" id="statTopScorerName" style="font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</div>
+        <div class="lbl">👑 Period Leader</div>
+      </div>
+      <div class="stat-badge-card">
+        <div class="num" id="statHighestPts">0</div>
+        <div class="lbl">Peak Points</div>
+      </div>
+    </div>
+
+    <div class="table-responsive-box">
+      <table class="lb-table">
+        <thead>
+          <tr>
+            <th style="width: 10%; text-align: center;">Rank</th>
+            <th style="width: 36%; text-align: left;">Player Name</th>
+            <th style="width: 11%; text-align: center; color: var(--accent-gold);">🥇 1st</th>
+            <th style="width: 11%; text-align: center; color: var(--accent-silver);">🥈 2nd</th>
+            <th style="width: 11%; text-align: center; color: var(--accent-bronze);">🥉 3rd</th>
+            <th style="width: 11%; text-align: center; color: #81d4fa;">4th</th>
+            <th style="width: 10%; text-align: right; color: var(--accent-cyan);">Total Pts</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboardBody"></tbody>
+      </table>
+    </div>
+
+    <div class="export-footer-bar">
+      <span style="font-size: 0.82rem; color: var(--text-muted);">📁 Leaderboard Data Options:</span>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-secondary btn-mini" onclick="exportCSV()">📊 Export CSV (Excel)</button>
+        <button class="btn btn-secondary btn-mini" onclick="exportJSON()">💾 Backup JSON</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: MATCH LOGS -->
+  <div id="historyTab" class="view-panel">
+    <h2 style="color: var(--accent-cyan); margin-bottom: 14px; font-size: 1.25rem;">📅 Tournament Match Records</h2>
+    <div id="logsContainer"></div>
+  </div>
+
+  <!-- TAB 3: ADMIN ENTRY -->
+  <div id="entryTab" class="view-panel">
+    <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 16px;">
+      <h2 style="color: var(--accent-cyan); margin: 0; font-size: 1.25rem;">⚙️ Input Tournament Match Result</h2>
+    </div>
+
+    <div class="card grid-2">
+      <div class="form-group">
+        <label>Event Name:</label>
+        <input type="text" id="entryEventName" placeholder="e.g. Weekend Cup Vol. 1 or G1 Trial">
+      </div>
+      <div class="form-group">
+        <label>Event Date:</label>
+        <input type="date" id="entryEventDate">
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="color: var(--accent-gold); margin-bottom: 14px; font-size: 1rem;">🏆 Top 4 Podiums (Points: 10 - 7 - 5 - 3)</h3>
+      <div class="grid-2">
+        <div class="form-group">
+          <label style="color: var(--accent-gold);">🥇 1st Place (10 pts):</label>
+          <input type="text" id="entryP1" placeholder="Champion player name">
+        </div>
+
+        <div class="form-group">
+          <label style="color: var(--accent-silver);">🥈 2nd Place (7 pts):</label>
+          <input type="text" id="entryP2" placeholder="Runner-up player name">
+        </div>
+
+        <div class="form-group">
+          <label style="color: var(--accent-bronze);">🥉 3rd Place (5 pts):</label>
+          <input type="text" id="entryP3" placeholder="3rd place player name">
+        </div>
+
+        <div class="form-group">
+          <label style="color: #81d4fa;">4th Place (3 pts):</label>
+          <input type="text" id="entryP4" placeholder="4th place player name">
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-action" style="width: 100%; padding: 12px; font-size: 1rem; margin-top: 10px;" onclick="submitEventResults()">
+      💾 Save & Publish Result
+    </button>
+  </div>
+</div>
+
+<!-- EDIT MATCH LOG MODAL -->
+<div id="editMatchModal" class="modal-overlay">
+  <div class="modal-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+      <h3 style="margin: 0; color: var(--accent-cyan);">✏️ Edit Tournament Result</h3>
+      <button class="btn btn-secondary btn-mini" onclick="closeEditModal()">✕ Close</button>
+    </div>
+
+    <input type="hidden" id="editEventIndex">
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Event Name:</label>
+        <input type="text" id="editEventName">
+      </div>
+      <div class="form-group">
+        <label>Event Date:</label>
+        <input type="date" id="editEventDate">
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 10px;">
+      <h4 style="color: var(--accent-gold); margin-bottom: 10px; font-size: 0.9rem;">Podium Placings (10-7-5-3)</h4>
+      <div class="grid-2">
+        <div class="form-group">
+          <label style="color: var(--accent-gold);">🥇 1st Place:</label>
+          <input type="text" id="editP1">
+        </div>
+        <div class="form-group">
+          <label style="color: var(--accent-silver);">🥈 2nd Place:</label>
+          <input type="text" id="editP2">
+        </div>
+        <div class="form-group">
+          <label style="color: var(--accent-bronze);">🥉 3rd Place:</label>
+          <input type="text" id="editP3">
+        </div>
+        <div class="form-group">
+          <label style="color: #81d4fa;">4th Place:</label>
+          <input type="text" id="editP4">
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px;">
+      <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-action" onclick="saveEditedEvent()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase Modular SDK Integration -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCEU08RVmLf1Sjdw8ALyN9ZwkzF76nJu9I",
+    authDomain: "beyda-leaderboards.firebaseapp.com",
+    databaseURL: "https://beyda-leaderboards-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "beyda-leaderboards",
+    storageBucket: "beyda-leaderboards.firebasestorage.app",
+    messagingSenderId: "432594521410",
+    appId: "1:432594521410:web:ed6c25e5b4eb42ff5c4cdb",
+    measurementId: "G-0E742XY5LW"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const dbRef = ref(db, 'yearlyLeaderboardState');
+
+  const ADMIN_PASS = "1234";
+
+  window.isAdmin = false;
+  window.activeYear = "2026";
+  window.activePeriodMode = "yearly";
+  window.activePeriodValue = "all";
+
+  const dummySeedData = {
+    "2026": [
+      { eventName: "Weekend Gathering Vol. 1", date: "2026-01-10", p1: "Kenta Blade", p2: "Ryuto X", p3: "Ginga Star", p4: "Daigo Shadow" },
+      { eventName: "Sunday Mini Tourney", date: "2026-01-18", p1: "Ryuto X", p2: "Bagus Bali", p3: "Kenta Blade", p4: "Alex Storm" },
+      { eventName: "Dewata Weekend Clash", date: "2026-02-08", p1: "Ginga Star", p2: "Kenta Blade", p3: "Ryuto X", p4: "Bagus Bali" },
+      { eventName: "Quarter 2 Opener", date: "2026-04-12", p1: "Ryuto X", p2: "Dewa X", p3: "Alex Storm", p4: "Ginga Star" },
+      { eventName: "Mid-Year Stage Cup", date: "2026-07-19", p1: "Kenta Blade", p2: "Ginga Star", p3: "Bagus Bali", p4: "Ryuto X" },
+      { eventName: "Independence Battle", date: "2026-08-23", p1: "Alex Storm", p2: "Ryuto X", p3: "Dewa X", p4: "Kenta Blade" }
+    ]
+  };
+
+  window.allData = {};
+
+  onValue(dbRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data && Object.keys(data).length > 0) {
+      window.allData = data;
+      renderAll();
+    } else {
+      window.allData = dummySeedData;
+      window.saveFirebaseData();
+    }
+  });
+
+  window.saveFirebaseData = function() {
+    const statusEl = document.getElementById("syncStatus");
+    if (statusEl) {
+      statusEl.className = "status-pill status-syncing";
+      statusEl.textContent = "⏳ Syncing...";
+    }
+
+    set(dbRef, window.allData).then(() => {
+      if (statusEl) {
+        statusEl.className = "status-pill status-online";
+        statusEl.textContent = "🟢 Live Sync Active";
+      }
+    }).catch(err => {
+      console.error("Firebase save error:", err);
+      if (statusEl) {
+        statusEl.className = "status-pill";
+        statusEl.style.color = "var(--accent-red)";
+        statusEl.textContent = "❌ Sync Failed";
+      }
+      alert("Firebase Sync Error: " + err.message);
+    });
+  };
+
+  function getCurrentYearEvents() {
+    if (!window.allData[window.activeYear]) window.allData[window.activeYear] = [];
+    return window.allData[window.activeYear];
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("entryEventDate").value = new Date().toISOString().slice(0, 10);
+  });
+
+  window.switchYear = function(year) {
+    window.activeYear = year;
+    renderAll();
+  };
+
+  window.switchTab = function(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+
+    const tabBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+    if (tabBtn) tabBtn.classList.add('active');
+    
+    document.getElementById(tabId).classList.add('active');
+  };
+
+  window.toggleAdminAuth = function() {
+    if (window.isAdmin) {
+      window.isAdmin = false;
+      document.getElementById("adminAuthBtn").innerHTML = "🔒 Admin Login";
+      document.querySelectorAll(".admin-locked").forEach(el => el.style.display = "none");
+      window.switchTab('standingsTab');
+      alert("Logged out from admin mode.");
+    } else {
+      const pass = prompt("Enter Admin Passcode (Default: 1234):");
+      if (pass === ADMIN_PASS) {
+        window.isAdmin = true;
+        document.getElementById("adminAuthBtn").innerHTML = "🔓 Admin Logout";
+        document.querySelectorAll(".admin-locked").forEach(el => el.style.display = "inline-flex");
+        alert("Admin Mode Unlocked!");
+      } else if (pass !== null) {
+        alert("Incorrect passcode!");
+      }
+    }
+    renderHistory();
+  };
+
+  window.setPeriodMode = function(mode) {
+    window.activePeriodMode = mode;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`btn_period_${mode}`).classList.add('active');
+
+    const subGroup = document.getElementById("subFilterGroup");
+    const subControls = document.getElementById("subFilterControls");
+    subControls.innerHTML = "";
+
+    if (mode === 'yearly') {
+      subGroup.style.display = "none";
+      window.activePeriodValue = "all";
+    } else if (mode === 'semester') {
+      subGroup.style.display = "flex";
+      subControls.innerHTML = `
+        <button class="filter-btn active" onclick="setPeriodValue('1', this)">Semester 1 (Jan–Jun)</button>
+        <button class="filter-btn" onclick="setPeriodValue('2', this)">Semester 2 (Jul–Des)</button>
+      `;
+      window.activePeriodValue = "1";
+    } else if (mode === 'quarter') {
+      subGroup.style.display = "flex";
+      subControls.innerHTML = `
+        <button class="filter-btn active" onclick="setPeriodValue('1', this)">Q1 (Jan-Mar)</button>
+        <button class="filter-btn" onclick="setPeriodValue('2', this)">Q2 (Apr-Jun)</button>
+        <button class="filter-btn" onclick="setPeriodValue('3', this)">Q3 (Jul-Sep)</button>
+        <button class="filter-btn" onclick="setPeriodValue('4', this)">Q4 (Okt-Des)</button>
+      `;
+      window.activePeriodValue = "1";
+    } else if (mode === 'monthly') {
+      subGroup.style.display = "flex";
+      const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+      subControls.innerHTML = months.map((m, idx) => `
+        <button class="filter-btn ${idx === 0 ? 'active' : ''}" onclick="setPeriodValue('${idx}', this)">${m}</button>
+      `).join("");
+      window.activePeriodValue = "0";
+    }
+
+    renderStandings();
+  };
+
+  window.setPeriodValue = function(val, btnEl) {
+    window.activePeriodValue = val;
+    if (btnEl) {
+      btnEl.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btnEl.classList.add('active');
+    }
+    renderStandings();
+  };
+
+  function isEventInSelectedPeriod(eventDateStr) {
+    if (window.activePeriodMode === 'yearly') return true;
+    const date = new Date(eventDateStr);
+    const month = date.getMonth();
+
+    if (window.activePeriodMode === 'semester') {
+      return (month < 6 ? "1" : "2") === window.activePeriodValue;
+    }
+    if (window.activePeriodMode === 'quarter') {
+      return String(Math.floor(month / 3) + 1) === window.activePeriodValue;
+    }
+    if (window.activePeriodMode === 'monthly') {
+      return String(month) === window.activePeriodValue;
+    }
+    return true;
+  }
+
+  function computeLeaderboard(filteredEvents) {
+    const playerMap = {};
+
+    filteredEvents.forEach(ev => {
+      const addPodium = (name, pts, rankKey) => {
+        if (!name) return;
+        const n = name.trim();
+        if (!playerMap[n]) {
+          playerMap[n] = { name: n, points: 0, p1: 0, p2: 0, p3: 0, p4: 0 };
+        }
+        playerMap[n].points += pts;
+        playerMap[n][rankKey] += 1;
+      };
+
+      addPodium(ev.p1, 10, 'p1');
+      addPodium(ev.p2, 7, 'p2');
+      addPodium(ev.p3, 5, 'p3');
+      addPodium(ev.p4, 3, 'p4');
+    });
+
+    return Object.values(playerMap).sort((a, b) => {
+      if (b.points !== a.points) return b.points - a.points;
+      if (b.p1 !== a.p1) return b.p1 - a.p1;
+      if (b.p2 !== a.p2) return b.p2 - a.p2;
+      if (b.p3 !== a.p3) return b.p3 - a.p3;
+      return b.p4 - a.p4;
+    });
+  }
+
+  function renderStandings() {
+    const currentEvents = getCurrentYearEvents();
+    const filteredEvents = currentEvents.filter(ev => isEventInSelectedPeriod(ev.date));
+    const standings = computeLeaderboard(filteredEvents);
+
+    document.getElementById("statTotalEvents").textContent = filteredEvents.length;
+    document.getElementById("statTopScorerName").textContent = standings.length > 0 ? standings[0].name : "-";
+    document.getElementById("statHighestPts").textContent = standings.length > 0 ? `${standings[0].points} pts` : "0";
+
+    const tbody = document.getElementById("leaderboardBody");
+    tbody.innerHTML = "";
+
+    if (standings.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:24px;">No tournament records for this period.</td></tr>`;
+      return;
+    }
+
+    let currentRank = 1;
+    for (let i = 0; i < standings.length; i++) {
+      const p = standings[i];
+
+      if (i === 0) {
+        currentRank = 1;
+      } else if (p.points < standings[i - 1].points) {
+        currentRank = i + 1;
+      }
+
+      let rankClass = "";
+      let rankText = `#${currentRank}`;
+      if (currentRank === 1) { 
+        rankClass = "rank-1"; 
+        rankText = "🥇 1st"; 
+      } else if (currentRank === 2) { 
+        rankClass = "rank-2"; 
+        rankText = "🥈 2nd"; 
+      } else if (currentRank === 3) { 
+        rankClass = "rank-3"; 
+        rankText = "🥉 3rd"; 
+      }
+
+      const drawerId = `drawer_${i}`;
+
+      // Urutkan event berdasarkan tanggal (terbaru ke terlama) untuk log accordion
+      const sortedEvents = filteredEvents.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+      let playerLogsHtml = "";
+      let totalFinishes = p.p1 + p.p2 + p.p3 + p.p4;
+
+      sortedEvents.forEach(ev => {
+        let resBadge = null;
+        let ptsGained = 0;
+
+        if (ev.p1 === p.name) { resBadge = '<span style="color:var(--accent-gold); font-weight:bold;">🥇 1st Place</span>'; ptsGained = 10; }
+        else if (ev.p2 === p.name) { resBadge = '<span style="color:var(--accent-silver); font-weight:bold;">🥈 2nd Place</span>'; ptsGained = 7; }
+        else if (ev.p3 === p.name) { resBadge = '<span style="color:var(--accent-bronze); font-weight:bold;">🥉 3rd Place</span>'; ptsGained = 5; }
+        else if (ev.p4 === p.name) { resBadge = '<span style="color:#81d4fa; font-weight:bold;">4th Place</span>'; ptsGained = 3; }
+
+        if (resBadge) {
+          playerLogsHtml += `
+            <tr>
+              <td><strong>${escapeHtml(ev.eventName)}</strong></td>
+              <td style="color:var(--text-muted);">${ev.date}</td>
+              <td>${resBadge}</td>
+              <td style="text-align:right; color:var(--accent-cyan); font-weight:bold;">+${ptsGained} pts</td>
+            </tr>
+          `;
+        }
+      });
+
+      tbody.innerHTML += `
+        <tr class="player-row" id="prow_${i}" onclick="togglePlayerDrawer(${i})" title="Click to view full match history">
+          <td class="rank-cell ${rankClass}">${rankText}</td>
+          <td><strong>${escapeHtml(p.name)}</strong></td>
+          <td style="text-align: center; font-weight: bold; color: var(--accent-gold);">${p.p1}</td>
+          <td style="text-align: center; font-weight: bold; color: var(--accent-silver);">${p.p2}</td>
+          <td style="text-align: center; font-weight: bold; color: var(--accent-bronze);">${p.p3}</td>
+          <td style="text-align: center; font-weight: bold; color: #81d4fa;">${p.p4}</td>
+          <td style="text-align: right; font-weight: bold; color: var(--accent-cyan); font-size: 1.05rem;">
+            ${p.points} <span style="font-size:0.75rem;">pts</span>
+          </td>
+        </tr>
+        <tr class="details-row" id="${drawerId}">
+          <td colspan="7" class="details-cell">
+            <div class="drawer-content">
+              <div class="drawer-grid-mini">
+                <div class="stat-box-mini" style="border-color:var(--accent-gold);">
+                  <div class="val" style="color:var(--accent-gold);">${p.p1}</div>
+                  <div class="lbl">🥇 1st Place (10p)</div>
+                </div>
+                <div class="stat-box-mini" style="border-color:var(--accent-silver);">
+                  <div class="val" style="color:var(--accent-silver);">${p.p2}</div>
+                  <div class="lbl">🥈 2nd Place (7p)</div>
+                </div>
+                <div class="stat-box-mini" style="border-color:var(--accent-bronze);">
+                  <div class="val" style="color:var(--accent-bronze);">${p.p3}</div>
+                  <div class="lbl">🥉 3rd Place (5p)</div>
+                </div>
+                <div class="stat-box-mini" style="border-color:#81d4fa;">
+                  <div class="val" style="color:#81d4fa;">${p.p4}</div>
+                  <div class="lbl">4th Place (3p)</div>
+                </div>
+              </div>
+
+              <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; font-weight:bold;">
+                📋 Match Results in Current Period (${totalFinishes} Podiums):
+              </div>
+              <div class="table-scroll-wrapper">
+                <table class="history-log-table">
+                  <thead>
+                    <tr>
+                      <th>Event Name</th>
+                      <th>Date</th>
+                      <th>Result</th>
+                      <th style="text-align:right;">Points</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${playerLogsHtml || '<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:10px;">No finishes recorded.</td></tr>'}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+  }
+
+  window.togglePlayerDrawer = function(index) {
+    const drawerEl = document.getElementById(`drawer_${index}`);
+    const rowEl = document.getElementById(`prow_${index}`);
+    if (drawerEl && rowEl) {
+      drawerEl.classList.toggle('open');
+      rowEl.classList.toggle('active-drawer');
+    }
+  };
+
+  function renderHistory() {
+    const container = document.getElementById("logsContainer");
+    const currentEvents = getCurrentYearEvents();
+
+    container.innerHTML = "";
+
+    if (currentEvents.length === 0) {
+      container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">No match logs recorded for ${window.activeYear}.</p>`;
+      return;
+    }
+
+    // Urutkan event dari tanggal terbaru ke terlama secara otomatis
+    const sortedEventsWithIndex = currentEvents
+      .map((ev, originalIdx) => ({ ev, originalIdx }))
+      .sort((a, b) => new Date(b.ev.date) - new Date(a.ev.date));
+
+    sortedEventsWithIndex.forEach(({ ev, originalIdx }) => {
+      const adminActions = window.isAdmin ? `
+        <button class="btn-mini" style="background:var(--accent-orange); color:#fff;" onclick="openEditModal(${originalIdx})">✏️ Edit</button>
+        <button class="btn-mini" style="background:#c62828; color:#fff;" onclick="deleteEvent(${originalIdx})">🗑️ Delete</button>
+      ` : '';
+
+      container.innerHTML += `
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:6px;">
+            <h3 style="color:var(--accent-cyan); font-size:1.05rem;">${escapeHtml(ev.eventName)}</h3>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:0.85rem; color:var(--text-muted);">📅 ${ev.date}</span>
+              ${adminActions}
+            </div>
+          </div>
+          <div class="grid-4">
+            <div class="stat-box" style="border-color:var(--accent-gold);">
+              <div class="val" style="color:var(--accent-gold); font-size:0.95rem;">${escapeHtml(ev.p1) || '-'}</div>
+              <div class="lbl">🥇 1st (10 pts)</div>
+            </div>
+            <div class="stat-box" style="border-color:var(--accent-silver);">
+              <div class="val" style="color:var(--accent-silver); font-size:0.95rem;">${escapeHtml(ev.p2) || '-'}</div>
+              <div class="lbl">🥈 2nd (7 pts)</div>
+            </div>
+            <div class="stat-box" style="border-color:var(--accent-bronze);">
+              <div class="val" style="color:var(--accent-bronze); font-size:0.95rem;">${escapeHtml(ev.p3) || '-'}</div>
+              <div class="lbl">🥉 3rd (5 pts)</div>
+            </div>
+            <div class="stat-box" style="border-color:#81d4fa;">
+              <div class="val" style="color:#81d4fa; font-size:0.95rem;">${escapeHtml(ev.p4) || '-'}</div>
+              <div class="lbl">4th (3 pts)</div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  /* Edit Modal Functions */
+  window.openEditModal = function(index) {
+    const currentEvents = getCurrentYearEvents();
+    const ev = currentEvents[index];
+    if (!ev) return;
+
+    document.getElementById("editEventIndex").value = index;
+    document.getElementById("editEventName").value = ev.eventName || "";
+    document.getElementById("editEventDate").value = ev.date || "";
+    document.getElementById("editP1").value = ev.p1 || "";
+    document.getElementById("editP2").value = ev.p2 || "";
+    document.getElementById("editP3").value = ev.p3 || "";
+    document.getElementById("editP4").value = ev.p4 || "";
+
+    document.getElementById("editMatchModal").classList.add("active");
+  };
+
+  window.closeEditModal = function() {
+    document.getElementById("editMatchModal").classList.remove("active");
+  };
+
+  window.saveEditedEvent = function() {
+    const idx = parseInt(document.getElementById("editEventIndex").value);
+    const eventName = document.getElementById("editEventName").value.trim();
+    const date = document.getElementById("editEventDate").value;
+    const p1 = document.getElementById("editP1").value.trim();
+    const p2 = document.getElementById("editP2").value.trim();
+    const p3 = document.getElementById("editP3").value.trim();
+    const p4 = document.getElementById("editP4").value.trim();
+
+    if (!eventName || !p1 || !p2 || !p3 || !p4) {
+      return alert("Please fill all fields!");
+    }
+
+    const currentEvents = getCurrentYearEvents();
+    if (currentEvents[idx]) {
+      currentEvents[idx] = { eventName, date, p1, p2, p3, p4 };
+      window.saveFirebaseData();
+      closeEditModal();
+      alert("Event updated successfully!");
+    }
+  };
+
+  window.deleteEvent = function(index) {
+    if (confirm("Are you sure you want to delete this event record?")) {
+      window.allData[window.activeYear].splice(index, 1);
+      window.saveFirebaseData();
+    }
+  };
+
+  window.submitEventResults = function() {
+    const eventName = document.getElementById("entryEventName").value.trim();
+    const date = document.getElementById("entryEventDate").value;
+    const p1 = document.getElementById("entryP1").value.trim();
+    const p2 = document.getElementById("entryP2").value.trim();
+    const p3 = document.getElementById("entryP3").value.trim();
+    const p4 = document.getElementById("entryP4").value.trim();
+
+    if (!eventName) return alert("Please enter Event Name!");
+    if (!p1 || !p2 || !p3 || !p4) {
+      return alert("Please fill all Top 4 positions (1st, 2nd, 3rd, and 4th)!");
+    }
+
+    const newEvent = {
+      eventName,
+      date,
+      p1,
+      p2,
+      p3,
+      p4
+    };
+
+    if (!window.allData[window.activeYear]) window.allData[window.activeYear] = [];
+    window.allData[window.activeYear].push(newEvent);
+    window.saveFirebaseData();
+
+    document.getElementById("entryEventName").value = "";
+    document.getElementById("entryP1").value = "";
+    document.getElementById("entryP2").value = "";
+    document.getElementById("entryP3").value = "";
+    document.getElementById("entryP4").value = "";
+
+    alert(`Event "${eventName}" saved to Firebase for year ${window.activeYear}!`);
+    window.switchTab('standingsTab');
+  };
+
+  window.exportCSV = function() {
+    const currentEvents = getCurrentYearEvents();
+    const standings = computeLeaderboard(currentEvents);
+    let csv = `Rank,Player Name,Juara 1,Juara 2,Juara 3,Posisi 4,Total Points\n`;
+    standings.forEach((p, idx) => {
+      csv += `${idx + 1},"${p.name}",${p.p1},${p.p2},${p.p3},${p.p4},${p.points}\n`;
+    });
+    downloadFile(csv, `Beyforce_Leaderboard_${window.activeYear}.csv`, "text/csv");
+  };
+
+  window.exportJSON = function() {
+    const jsonStr = JSON.stringify(window.allData, null, 2);
+    downloadFile(jsonStr, `Beyforce_Leaderboard_Backup_${window.activeYear}.json`, "application/json");
+  };
+
+  function downloadFile(content, filename, type) {
+    const a = document.createElement('a');
+    const blob = new Blob([content], { type });
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+  }
+
+  function renderAll() {
+    renderStandings();
+    renderHistory();
+  }
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+</script>
+</body>
+</html>
