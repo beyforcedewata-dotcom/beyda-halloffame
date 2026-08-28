@@ -513,6 +513,7 @@
     .btn-secondary { background: #132240; color: var(--text-white); border: 1px solid var(--border-color); }
     .btn-mini { padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; background: #1a2b4c; color: var(--accent-cyan); border: 1px solid var(--border-color); cursor: pointer; }
 
+    /* Admin-only Footer Bar */
     .export-footer-bar {
       margin-top: 24px;
       padding: 12px;
@@ -647,7 +648,8 @@
       </table>
     </div>
 
-    <div class="export-footer-bar">
+    <!-- Hidden by default in public, visible when admin is authenticated -->
+    <div class="export-footer-bar admin-locked" style="display: none;">
       <span style="font-size: 0.82rem; color: var(--text-muted);">📁 Leaderboard Data Options:</span>
       <div style="display: flex; gap: 8px;">
         <button class="btn btn-secondary btn-mini" onclick="exportCSV()">📊 Export CSV (Excel)</button>
@@ -662,7 +664,7 @@
     <div id="logsContainer"></div>
   </div>
 
-  <!-- TAB 3: ADMIN ENTRY & TOOLS -->
+  <!-- TAB 3: ADMIN ENTRY & MANAGEMENT -->
   <div id="entryTab" class="view-panel">
     
     <!-- 1. Input Match Result -->
@@ -826,7 +828,7 @@
 
   window.adminPasscode = "1234";
 
-  // Listener Passcode dari Firebase (agar tersimpan permanen)
+  // Listener Passcode dari Firebase
   onValue(passRef, (snapshot) => {
     const val = snapshot.val();
     if (val) {
@@ -912,7 +914,13 @@
       if (pass === window.adminPasscode) {
         window.isAdmin = true;
         document.getElementById("adminAuthBtn").innerHTML = "🔓 Admin Logout";
-        document.querySelectorAll(".admin-locked").forEach(el => el.style.display = "inline-flex");
+        document.querySelectorAll(".admin-locked").forEach(el => {
+          if (el.classList.contains('export-footer-bar')) {
+            el.style.display = "flex";
+          } else {
+            el.style.display = "inline-flex";
+          }
+        });
         alert("Admin Mode Unlocked!");
       } else if (pass !== null) {
         alert("Incorrect passcode!");
