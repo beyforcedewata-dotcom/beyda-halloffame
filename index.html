@@ -23,6 +23,8 @@
       --text-white: #ffffff;
       --text-muted: #8a99ad;
       --border-color: rgba(0, 229, 255, 0.22);
+      --table-border: rgba(0, 229, 255, 0.28);
+      --table-sub-border: rgba(255, 255, 255, 0.07);
     }
 
     * {
@@ -252,12 +254,13 @@
       margin-top: 2px;
     }
 
-    /* Table Layout (7 Distinct Columns) */
+    /* Clean Layout Table */
     .table-responsive-box {
       width: 100%;
       overflow-x: auto;
       border-radius: 6px;
-      border: 1px solid rgba(0, 229, 255, 0.18);
+      border: 1px solid var(--table-border);
+      background: #060d1b;
     }
 
     .lb-table {
@@ -268,30 +271,50 @@
     }
 
     .lb-table th {
-      background: #071020;
+      background: #081326;
       color: var(--accent-cyan);
       font-weight: bold;
-      padding: 12px 10px;
+      padding: 13px 12px;
       font-size: 0.82rem;
       border-bottom: 2px solid var(--accent-cyan);
+      border-right: 1px solid var(--table-border);
       text-transform: uppercase;
       white-space: nowrap;
     }
+    .lb-table th:last-child {
+      border-right: none;
+    }
 
     .lb-table td {
-      padding: 12px 10px;
+      padding: 11px 12px;
       vertical-align: middle;
       font-size: 0.9rem;
     }
 
+    /* Rank Cell with Rowspan Grouping */
+    .rank-cell-merged {
+      text-align: center;
+      font-weight: 800;
+      font-size: 0.96rem;
+      white-space: nowrap;
+      border-right: 1px solid var(--table-border);
+      border-bottom: 1px solid var(--table-border);
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    /* Player rows */
     .player-row {
       cursor: pointer;
       transition: background 0.18s;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid var(--table-sub-border);
     }
 
     .player-row:hover {
       background: rgba(0, 229, 255, 0.08);
+    }
+
+    .player-row.group-bottom {
+      border-bottom: 1px solid var(--table-border);
     }
 
     .player-row.active-drawer {
@@ -299,12 +322,6 @@
       border-bottom: none;
     }
 
-    .rank-cell {
-      text-align: center;
-      font-weight: 800;
-      font-size: 0.95rem;
-      white-space: nowrap;
-    }
     .rank-1 {
       color: #ffd700 !important;
       font-size: 1.15rem;
@@ -319,10 +336,10 @@
       font-size: 1rem;
     }
 
-    /* Polished Accordion Drawer */
+    /* Accordion Drawer */
     .details-row {
       display: none;
-      background: #060e1d;
+      background: #040914;
       border-bottom: 2px solid var(--accent-cyan);
     }
 
@@ -542,6 +559,8 @@
       .view-panel { padding: 10px; }
       .tab-btn { flex: 1 1 auto; text-align: center; padding: 6px 8px; font-size: 0.78rem; }
       .stat-badge-card .num { font-size: 1.15rem; }
+      .lb-table th { font-size: 0.75rem; padding: 10px 6px; }
+      .lb-table td { font-size: 0.82rem; padding: 9px 6px; }
     }
   </style>
 </head>
@@ -575,14 +594,14 @@
     </div>
   </header>
 
-  <!-- Sticky Tabs Navigation -->
+  <!-- Navigation Tabs -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('standingsTab')">🏆 Standings & Rank</button>
     <button class="tab-btn" onclick="switchTab('historyTab')">📅 Match Logs</button>
     <button class="tab-btn admin-locked" id="tab_entry" onclick="switchTab('entryTab')">⚙️ Entry</button>
   </div>
 
-  <!-- TAB 1: STANDINGS & RANK (7 Separate Columns Layout) -->
+  <!-- TAB 1: STANDINGS & RANK -->
   <div id="standingsTab" class="view-panel active">
     <div class="filter-bar">
       <div class="filter-group">
@@ -618,12 +637,12 @@
       <table class="lb-table">
         <thead>
           <tr>
-            <th style="width: 10%; text-align: center;">Rank</th>
-            <th style="width: 36%; text-align: left;">Player Name</th>
-            <th style="width: 11%; text-align: center; color: var(--accent-gold);">🥇 1st</th>
-            <th style="width: 11%; text-align: center; color: var(--accent-silver);">🥈 2nd</th>
-            <th style="width: 11%; text-align: center; color: var(--accent-bronze);">🥉 3rd</th>
-            <th style="width: 11%; text-align: center; color: #81d4fa;">4th</th>
+            <th style="width: 12%; text-align: center;">Rank</th>
+            <th style="width: 38%; text-align: left;">Player Name</th>
+            <th style="width: 10%; text-align: center; color: var(--accent-gold);">🥇 1st</th>
+            <th style="width: 10%; text-align: center; color: var(--accent-silver);">🥈 2nd</th>
+            <th style="width: 10%; text-align: center; color: var(--accent-bronze);">🥉 3rd</th>
+            <th style="width: 10%; text-align: center; color: #81d4fa;">4th</th>
             <th style="width: 10%; text-align: right; color: var(--accent-cyan);">Total Pts</th>
           </tr>
         </thead>
@@ -773,15 +792,12 @@
 
   window.allData = {};
 
-  // Realtime Database Listener (Bersih tanpa dummy reset)
   onValue(dbRef, (snapshot) => {
     const data = snapshot.val();
     if (data) {
       window.allData = data;
     } else {
-      window.allData = {
-        "2026": []
-      };
+      window.allData = { "2026": [] };
     }
     renderAll();
   });
@@ -949,6 +965,10 @@
     });
   }
 
+  function isExactTie(a, b) {
+    return a.points === b.points && a.p1 === b.p1 && a.p2 === b.p2 && a.p3 === b.p3 && a.p4 === b.p4;
+  }
+
   function renderStandings() {
     const currentEvents = getCurrentYearEvents();
     const filteredEvents = currentEvents.filter(ev => isEventInSelectedPeriod(ev.date));
@@ -966,114 +986,124 @@
       return;
     }
 
-    let currentRank = 1;
+    const groupedStandings = [];
+    let currentRankNum = 1;
+
     for (let i = 0; i < standings.length; i++) {
-      const p = standings[i];
-
-      if (i === 0) {
-        currentRank = 1;
-      } else if (p.points < standings[i - 1].points) {
-        currentRank = i + 1;
+      if (i > 0 && !isExactTie(standings[i], standings[i - 1])) {
+        currentRankNum = i + 1;
       }
 
-      let rankClass = "";
-      let rankText = `#${currentRank}`;
-      if (currentRank === 1) { 
-        rankClass = "rank-1"; 
-        rankText = "🥇 1st"; 
-      } else if (currentRank === 2) { 
-        rankClass = "rank-2"; 
-        rankText = "🥈 2nd"; 
-      } else if (currentRank === 3) { 
-        rankClass = "rank-3"; 
-        rankText = "🥉 3rd"; 
+      if (groupedStandings.length === 0 || groupedStandings[groupedStandings.length - 1].rankNum !== currentRankNum) {
+        groupedStandings.push({
+          rankNum: currentRankNum,
+          players: [standings[i]]
+        });
+      } else {
+        groupedStandings[groupedStandings.length - 1].players.push(standings[i]);
       }
-
-      const drawerId = `drawer_${i}`;
-
-      // Urutkan event berdasarkan tanggal (terbaru ke terlama) untuk log accordion
-      const sortedEvents = filteredEvents.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
-      let playerLogsHtml = "";
-      let totalFinishes = p.p1 + p.p2 + p.p3 + p.p4;
-
-      sortedEvents.forEach(ev => {
-        let resBadge = null;
-        let ptsGained = 0;
-
-        if (ev.p1 === p.name) { resBadge = '<span style="color:var(--accent-gold); font-weight:bold;">🥇 1st Place</span>'; ptsGained = 10; }
-        else if (ev.p2 === p.name) { resBadge = '<span style="color:var(--accent-silver); font-weight:bold;">🥈 2nd Place</span>'; ptsGained = 7; }
-        else if (ev.p3 === p.name) { resBadge = '<span style="color:var(--accent-bronze); font-weight:bold;">🥉 3rd Place</span>'; ptsGained = 5; }
-        else if (ev.p4 === p.name) { resBadge = '<span style="color:#81d4fa; font-weight:bold;">4th Place</span>'; ptsGained = 3; }
-
-        if (resBadge) {
-          playerLogsHtml += `
-            <tr>
-              <td><strong>${escapeHtml(ev.eventName)}</strong></td>
-              <td style="color:var(--text-muted);">${ev.date}</td>
-              <td>${resBadge}</td>
-              <td style="text-align:right; color:var(--accent-cyan); font-weight:bold;">+${ptsGained} pts</td>
-            </tr>
-          `;
-        }
-      });
-
-      tbody.innerHTML += `
-        <tr class="player-row" id="prow_${i}" onclick="togglePlayerDrawer(${i})" title="Click to view full match history">
-          <td class="rank-cell ${rankClass}">${rankText}</td>
-          <td><strong>${escapeHtml(p.name)}</strong></td>
-          <td style="text-align: center; font-weight: bold; color: var(--accent-gold);">${p.p1}</td>
-          <td style="text-align: center; font-weight: bold; color: var(--accent-silver);">${p.p2}</td>
-          <td style="text-align: center; font-weight: bold; color: var(--accent-bronze);">${p.p3}</td>
-          <td style="text-align: center; font-weight: bold; color: #81d4fa;">${p.p4}</td>
-          <td style="text-align: right; font-weight: bold; color: var(--accent-cyan); font-size: 1.05rem;">
-            ${p.points} <span style="font-size:0.75rem;">pts</span>
-          </td>
-        </tr>
-        <tr class="details-row" id="${drawerId}">
-          <td colspan="7" class="details-cell">
-            <div class="drawer-content">
-              <div class="drawer-grid-mini">
-                <div class="stat-box-mini" style="border-color:var(--accent-gold);">
-                  <div class="val" style="color:var(--accent-gold);">${p.p1}</div>
-                  <div class="lbl">🥇 1st Place (10p)</div>
-                </div>
-                <div class="stat-box-mini" style="border-color:var(--accent-silver);">
-                  <div class="val" style="color:var(--accent-silver);">${p.p2}</div>
-                  <div class="lbl">🥈 2nd Place (7p)</div>
-                </div>
-                <div class="stat-box-mini" style="border-color:var(--accent-bronze);">
-                  <div class="val" style="color:var(--accent-bronze);">${p.p3}</div>
-                  <div class="lbl">🥉 3rd Place (5p)</div>
-                </div>
-                <div class="stat-box-mini" style="border-color:#81d4fa;">
-                  <div class="val" style="color:#81d4fa;">${p.p4}</div>
-                  <div class="lbl">4th Place (3p)</div>
-                </div>
-              </div>
-
-              <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; font-weight:bold;">
-                📋 Match Results in Current Period (${totalFinishes} Podiums):
-              </div>
-              <div class="table-scroll-wrapper">
-                <table class="history-log-table">
-                  <thead>
-                    <tr>
-                      <th>Event Name</th>
-                      <th>Date</th>
-                      <th>Result</th>
-                      <th style="text-align:right;">Points</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${playerLogsHtml || '<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:10px;">No finishes recorded.</td></tr>'}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </td>
-        </tr>
-      `;
     }
+
+    let globalPlayerIndex = 0;
+    const sortedEvents = filteredEvents.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    groupedStandings.forEach(group => {
+      let rankClass = "";
+      let rankText = `#${group.rankNum}`;
+      if (group.rankNum === 1) { rankClass = "rank-1"; rankText = "🥇 1st"; }
+      else if (group.rankNum === 2) { rankClass = "rank-2"; rankText = "🥈 2nd"; }
+      else if (group.rankNum === 3) { rankClass = "rank-3"; rankText = "🥉 3rd"; }
+
+      const groupRowspan = group.players.length;
+
+      group.players.forEach((p, pIdx) => {
+        const i = globalPlayerIndex++;
+        const isFirstInGroup = (pIdx === 0);
+        const isLastInGroup = (pIdx === group.players.length - 1);
+        const drawerId = `drawer_${i}`;
+
+        let playerLogsHtml = "";
+        let totalFinishes = p.p1 + p.p2 + p.p3 + p.p4;
+
+        sortedEvents.forEach(ev => {
+          let resBadge = null;
+          let ptsGained = 0;
+
+          if (ev.p1 === p.name) { resBadge = '<span style="color:var(--accent-gold); font-weight:bold;">🥇 1st Place</span>'; ptsGained = 10; }
+          else if (ev.p2 === p.name) { resBadge = '<span style="color:var(--accent-silver); font-weight:bold;">🥈 2nd Place</span>'; ptsGained = 7; }
+          else if (ev.p3 === p.name) { resBadge = '<span style="color:var(--accent-bronze); font-weight:bold;">🥉 3rd Place</span>'; ptsGained = 5; }
+          else if (ev.p4 === p.name) { resBadge = '<span style="color:#81d4fa; font-weight:bold;">4th Place</span>'; ptsGained = 3; }
+
+          if (resBadge) {
+            playerLogsHtml += `
+              <tr>
+                <td><strong>${escapeHtml(ev.eventName)}</strong></td>
+                <td style="color:var(--text-muted);">${ev.date}</td>
+                <td>${resBadge}</td>
+                <td style="text-align:right; color:var(--accent-cyan); font-weight:bold;">+${ptsGained} pts</td>
+              </tr>
+            `;
+          }
+        });
+
+        tbody.innerHTML += `
+          <tr class="player-row ${isLastInGroup ? 'group-bottom' : ''}" id="prow_${i}" onclick="togglePlayerDrawer(${i})" title="Click to view full match history">
+            ${isFirstInGroup ? `<td rowspan="${groupRowspan}" class="rank-cell-merged ${rankClass}">${rankText}</td>` : ''}
+            <td><strong>${escapeHtml(p.name)}</strong></td>
+            <td style="text-align: center; font-weight: bold; color: var(--accent-gold);">${p.p1}</td>
+            <td style="text-align: center; font-weight: bold; color: var(--accent-silver);">${p.p2}</td>
+            <td style="text-align: center; font-weight: bold; color: var(--accent-bronze);">${p.p3}</td>
+            <td style="text-align: center; font-weight: bold; color: #81d4fa;">${p.p4}</td>
+            <td style="text-align: right; font-weight: bold; color: var(--accent-cyan); font-size: 1.05rem;">
+              ${p.points} <span style="font-size:0.75rem;">pts</span>
+            </td>
+          </tr>
+          <tr class="details-row" id="${drawerId}">
+            <td colspan="7" class="details-cell">
+              <div class="drawer-content">
+                <div class="drawer-grid-mini">
+                  <div class="stat-box-mini" style="border-color:var(--accent-gold);">
+                    <div class="val" style="color:var(--accent-gold);">${p.p1}</div>
+                    <div class="lbl">🥇 1st Place (10p)</div>
+                  </div>
+                  <div class="stat-box-mini" style="border-color:var(--accent-silver);">
+                    <div class="val" style="color:var(--accent-silver);">${p.p2}</div>
+                    <div class="lbl">🥈 2nd Place (7p)</div>
+                  </div>
+                  <div class="stat-box-mini" style="border-color:var(--accent-bronze);">
+                    <div class="val" style="color:var(--accent-bronze);">${p.p3}</div>
+                    <div class="lbl">🥉 3rd Place (5p)</div>
+                  </div>
+                  <div class="stat-box-mini" style="border-color:#81d4fa;">
+                    <div class="val" style="color:#81d4fa;">${p.p4}</div>
+                    <div class="lbl">4th Place (3p)</div>
+                  </div>
+                </div>
+
+                <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; font-weight:bold;">
+                  📋 Match Results in Current Period (${totalFinishes} Podiums):
+                </div>
+                <div class="table-scroll-wrapper">
+                  <table class="history-log-table">
+                    <thead>
+                      <tr>
+                        <th>Event Name</th>
+                        <th>Date</th>
+                        <th>Result</th>
+                        <th style="text-align:right;">Points</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${playerLogsHtml || '<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:10px;">No finishes recorded.</td></tr>'}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+    });
   }
 
   window.togglePlayerDrawer = function(index) {
@@ -1096,7 +1126,6 @@
       return;
     }
 
-    // Urutkan event dari tanggal terbaru ke terlama secara otomatis
     const sortedEventsWithIndex = currentEvents
       .map((ev, originalIdx) => ({ ev, originalIdx }))
       .sort((a, b) => new Date(b.ev.date) - new Date(a.ev.date));
