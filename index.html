@@ -575,7 +575,7 @@
     </div>
   </header>
 
-  <!-- Sticky Navigation Tabs -->
+  <!-- Sticky Tabs Navigation -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('standingsTab')">🏆 Standings & Rank</button>
     <button class="tab-btn" onclick="switchTab('historyTab')">📅 Match Logs</button>
@@ -771,28 +771,19 @@
   window.activePeriodMode = "yearly";
   window.activePeriodValue = "all";
 
-  const dummySeedData = {
-    "2026": [
-      { eventName: "Weekend Gathering Vol. 1", date: "2026-01-10", p1: "Kenta Blade", p2: "Ryuto X", p3: "Ginga Star", p4: "Daigo Shadow" },
-      { eventName: "Sunday Mini Tourney", date: "2026-01-18", p1: "Ryuto X", p2: "Bagus Bali", p3: "Kenta Blade", p4: "Alex Storm" },
-      { eventName: "Dewata Weekend Clash", date: "2026-02-08", p1: "Ginga Star", p2: "Kenta Blade", p3: "Ryuto X", p4: "Bagus Bali" },
-      { eventName: "Quarter 2 Opener", date: "2026-04-12", p1: "Ryuto X", p2: "Dewa X", p3: "Alex Storm", p4: "Ginga Star" },
-      { eventName: "Mid-Year Stage Cup", date: "2026-07-19", p1: "Kenta Blade", p2: "Ginga Star", p3: "Bagus Bali", p4: "Ryuto X" },
-      { eventName: "Independence Battle", date: "2026-08-23", p1: "Alex Storm", p2: "Ryuto X", p3: "Dewa X", p4: "Kenta Blade" }
-    ]
-  };
-
   window.allData = {};
 
+  // Realtime Database Listener (Bersih tanpa dummy reset)
   onValue(dbRef, (snapshot) => {
     const data = snapshot.val();
-    if (data && Object.keys(data).length > 0) {
+    if (data) {
       window.allData = data;
-      renderAll();
     } else {
-      window.allData = dummySeedData;
-      window.saveFirebaseData();
+      window.allData = {
+        "2026": []
+      };
     }
+    renderAll();
   });
 
   window.saveFirebaseData = function() {
