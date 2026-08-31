@@ -826,15 +826,34 @@
   const dbRef = ref(db, 'yearlyLeaderboardState');
   const passRef = ref(db, 'adminPasscodeState');
 
-  window.adminPasscode = "1234";
+  // Helper Enkripsi SHA-256 (Web Crypto API)
+  async function hashPasscode(passcode) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(passcode);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
 
-  // Listener Passcode dari Firebase
-  onValue(passRef, (snapshot) => {
+  window.adminPasscodeHash = "";
+
+  // Listener Passcode dari Firebase (dengan Auto-Migration ke SHA-256)
+  onValue(passRef, async (snapshot) => {
     const val = snapshot.val();
     if (val) {
-      window.adminPasscode = String(val);
+      const passStr = String(val);
+      if (passStr.length === 64 && /^[0-9a-f]+$/i.test(passStr)) {
+        window.adminPasscodeHash = passStr;
+      } else {
+        // Otomatis enkripsi password teks biasa yang sudah ada
+        const autoHashed = await hashPasscode(passStr);
+        window.adminPasscodeHash = autoHashed;
+        set(passRef, autoHashed);
+      }
     } else {
-      set(passRef, "1234");
+      const defaultHash = await hashPasscode("1234");
+      window.adminPasscodeHash = defaultHash;
+      set(passRef, defaultHash);
     }
   });
 
@@ -902,7 +921,7 @@
     document.getElementById(tabId).classList.add('active');
   };
 
-  window.toggleAdminAuth = function() {
+  window.toggleAdminAuth = async function() {
     if (window.isAdmin) {
       window.isAdmin = false;
       document.getElementById("adminAuthBtn").innerHTML = "🔒 Admin Login";
@@ -910,8 +929,11 @@
       window.switchTab('standingsTab');
       alert("Logged out from admin mode.");
     } else {
-      const pass = prompt("Enter Admin Passcode:");
-      if (pass === window.adminPasscode) {
+      const inputPass = prompt("Enter Admin Passcode:");
+      if (!inputPass) return;
+
+      const hashedInput = await hashPasscode(inputPass);
+      if (hashedInput === window.adminPasscodeHash) {
         window.isAdmin = true;
         document.getElementById("adminAuthBtn").innerHTML = "🔓 Admin Logout";
         document.querySelectorAll(".admin-locked").forEach(el => {
@@ -922,14 +944,14 @@
           }
         });
         alert("Admin Mode Unlocked!");
-      } else if (pass !== null) {
+      } else {
         alert("Incorrect passcode!");
       }
     }
     renderHistory();
   };
 
-  window.changeAdminPasscode = function() {
+  window.changeAdminPasscode = async function() {
     const cur = document.getElementById("currentPassInput").value.trim();
     const next = document.getElementById("newPassInput").value.trim();
 
@@ -937,7 +959,8 @@
       return alert("Please enter both current and new passcodes!");
     }
 
-    if (cur !== window.adminPasscode) {
+    const hashedCurrent = await hashPasscode(cur);
+    if (hashedCurrent !== window.adminPasscodeHash) {
       return alert("Current passcode is incorrect!");
     }
 
@@ -945,11 +968,12 @@
       return alert("New passcode must be at least 4 characters!");
     }
 
-    set(passRef, next).then(() => {
-      window.adminPasscode = next;
+    const hashedNext = await hashPasscode(next);
+    set(passRef, hashedNext).then(() => {
+      window.adminPasscodeHash = hashedNext;
       document.getElementById("currentPassInput").value = "";
       document.getElementById("newPassInput").value = "";
-      alert("Admin Passcode successfully updated!");
+      alert("Admin Passcode successfully encrypted & updated!");
     }).catch(err => alert("Error updating passcode: " + err.message));
   };
 
@@ -1206,7 +1230,7 @@
 
           if (ev.p1 === p.name) { resBadge = '<span style="color:var(--accent-gold); font-weight:bold;">🥇 1st Place</span>'; ptsGained = 10; }
           else if (ev.p2 === p.name) { resBadge = '<span style="color:var(--accent-silver); font-weight:bold;">🥈 2nd Place</span>'; ptsGained = 7; }
-          else if (ev.p3 === p.name) { resBadge = '<span style="color:var(--accent-bronze); font-weight:bold;">🥉 3rd Place</span>'; ptsGained = 5; }
+          else if (ev.p3 === p.name) { resBadge = '<span style="color:var(--accent-bronke); font-weight:bold;">🥉 3rd Place</span>'; ptsGained = 5; }
           else if (ev.p4 === p.name) { resBadge = '<span style="color:#81d4fa; font-weight:bold;">4th Place</span>'; ptsGained = 3; }
 
           if (resBadge) {
